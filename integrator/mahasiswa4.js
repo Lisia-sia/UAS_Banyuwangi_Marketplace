@@ -1,93 +1,54 @@
-const express = require('express');
-const axios = require('axios');
-const router = express.Router();
+const vendorA = require("../vendor/mahasiswa1");
+const vendorB = require("../vendor/mahasiswa2");
+const vendorC = require("../vendor/mahasiswa3");
 
-router.get('/', async (req, res) => {
-    try {
-        // Deteksi URL Host (Supaya jalan di Localhost maupun Vercel)
-        const protocol = req.protocol;
-        const host = req.get('host');
-        const baseURL = `${protocol}://${host}`;
+function normalizeAllVendors() {
+    
+    // VENDOR A
+    const A = vendorA.map(item => {
+        const harga = parseInt(item.hrg);
+        const harga_final = harga - harga * 0.10; // Diskon 10%
 
-        // 1. CONSUME: Ambil data dari 3 Vendor sekaligus [cite: 74]
-        const [respA, respB, respC] = await Promise.all([
-            axios.get(`${baseURL}/api/vendor-a`),
-            axios.get(`${baseURL}/api/vendor-b`),
-            axios.get(`${baseURL}/api/vendor-c`)
-        ]);
+        return {
+            vendor: "Vendor A",
+            kode_produk: item.kd_produk,
+            nama_produk: item.nm_brg,
+            harga_final: harga_final,
+            stok: item.ket_stok === "ada" ? "Tersedia" : "Habis"
+        };
+    });
 
-        const dataA = respA.data;
-        const dataB = respB.data;
-        const dataC = respC.data;
+    // VENDOR B
+    const B = vendorB.map(item => {
+        return {
+            vendor: "Vendor B",
+            kode_produk: item.sku,
+            nama_produk: item.productName,
+            harga_final: item.price,
+            stok: item.isAvailable ? "Tersedia" : "Habis"
+        };
+    });
 
-        // 2. NORMALISASI & MAPPING
+    // VENDOR C
+    const C = vendorC.map(item => {
+        const harga_final = item.pricing.base_price + item.pricing.tax;
 
-        // --- Vendor A (Warung) ---
-        const cleanA = dataA.map(item => {
-            // Syarat: Ubah string "15000" jadi integer [cite: 79]
-            let hargaInt = parseInt(item.hrg);
-            
-            // Syarat: Diskon 10% khusus Vendor A [cite: 83]
-            let hargaFinal = hargaInt - (hargaInt * 0.10); 
+        let nama = item.details.name;
+        if (item.details.category === "Food") {
+            nama += " (Recommended)";
+        }
 
-            return {
-                id: item.kd_produk,
-                nama_produk: item.nm_brg,
-                harga: hargaFinal,
-                // Syarat: "ada" tetap, "habis" jadi konsisten [cite: 80]
-                status: (item.ket_stok === 'ada') ? 'Tersedia' : 'Habis',
-                sumber: "Vendor A (Warung)"
-            };
-        });
+        return {
+            vendor: "Vendor C",
+            kode_produk: item.id,
+            nama_produk: nama,
+            harga_final: harga_final,
+            stok: item.stock > 0 ? "Tersedia" : "Habis"
+        };
+    });
 
-        // --- Vendor B (Distro) ---
-        const cleanB = dataB.map(item => {
-            // Syarat: Produk Vendor B tidak ada perubahan harga [cite: 86]
-            return {
-                id: item.sku,
-                nama_produk: item.productName,
-                harga: item.price, 
-                // Syarat: true diubah jadi "Tersedia" [cite: 81]
-                status: (item.isAvailable) ? 'Tersedia' : 'Habis',
-                sumber: "Vendor B (Distro)"
-            };
-        });
+    // GABUNGKAN SEMUA
+    return [...A, ...B, ...C];
+}
 
-        // --- Vendor C (Resto) ---
-        const cleanC = dataC.map(item => {
-            // Syarat: Harga base + tax [cite: 82]
-            let hargaFinal = item.pricing.base_price + item.pricing.tax;
-            
-            // Syarat: Jika kategori Food, tambah label (Recommended) [cite: 84-85]
-            let namaFinal = item.details.name;
-            if(item.details.category === 'Food') {
-                namaFinal = namaFinal + " (Recommended)";
-            }
-
-            return {
-                id: item.id.toString(),
-                nama_produk: namaFinal,
-                harga: hargaFinal,
-                status: (item.stock > 0) ? 'Tersedia' : 'Habis',
-                sumber: "Vendor C (Resto)"
-            };
-        });
-
-        // 3. OUTPUT AKHIR (Merge) [cite: 76-77]
-        const hasilAkhir = [...cleanA, ...cleanB, ...cleanC];
-
-        res.json({
-            status: "success",
-            total_data: hasilAkhir.length,
-            data: hasilAkhir
-        });
-
-    } catch (error) {
-        res.status(500).json({ 
-            error: "Gagal mengambil data", 
-            detail: error.message 
-        });
-    }
-});
-
-module.exports = router;
+module.exports = normalizeAllVendors;
