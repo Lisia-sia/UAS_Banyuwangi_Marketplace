@@ -14,6 +14,24 @@ const data = [
         "nm_brg": "Gula Merah", 
         "hrg": "12500", 
         "ket_stok": "habis" 
+    },
+    { 
+        "kd_produk": "A003", 
+        "nm_brg": "Minyak", 
+        "hrg": "22000", 
+        "ket_stok": "ada" 
+    },
+    { 
+        "kd_produk": "A004", 
+        "nm_brg": "Beras", 
+        "hrg": "14500", 
+        "ket_stok": "ada" 
+    },
+    { 
+        "kd_produk": "A005", 
+        "nm_brg": "Kacang Hijau", 
+        "hrg": "15000", 
+        "ket_stok": "habis" 
     }
 ];
 
