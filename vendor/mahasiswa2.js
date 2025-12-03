@@ -29,13 +29,6 @@ const data = [
         "productName": "Sweater Blue Mountain", 
         "price": 130000, 
         "isAvailable": true 
-    },
-
-    { 
-        "sku": "TSHIRT-005", 
-        "productName": "Polo Shirt Volcano Series", 
-        "price": 95000, 
-        "isAvailable": false 
     }
 ];
 
