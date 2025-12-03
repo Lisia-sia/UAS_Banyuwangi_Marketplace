@@ -2,53 +2,55 @@ const vendorA = require("../vendor/mahasiswa1");
 const vendorB = require("../vendor/mahasiswa2");
 const vendorC = require("../vendor/mahasiswa3");
 
-function normalizeAllVendors() {
-    
-    // VENDOR A
-    const A = vendorA.map(item => {
-        const harga = parseInt(item.hrg);
-        const harga_final = harga - harga * 0.10; // Diskon 10%
+function normalize() {
+    const dataA = vendorA().map(item => ({
+        id: item.kd_produk,
+        product_name: item.nm_brg,
+        // ubah string harga → integer
+        price_final: parseInt(item.hrg),
 
-        return {
-            vendor: "Vendor A",
-            kode_produk: item.kd_produk,
-            nama_produk: item.nm_brg,
-            harga_final: harga_final,
-            stok: item.ket_stok === "ada" ? "Tersedia" : "Habis"
-        };
-    });
+        // stok: "ada" / "habis" tetap dipakai
+        stock_status: item.ket_stok,
 
-    // VENDOR B
-    const B = vendorB.map(item => {
-        return {
-            vendor: "Vendor B",
-            kode_produk: item.sku,
-            nama_produk: item.productName,
-            harga_final: item.price,
-            stok: item.isAvailable ? "Tersedia" : "Habis"
-        };
-    });
+        vendor: "A"
+    }));
 
-    // VENDOR C
-    const C = vendorC.map(item => {
-        const harga_final = item.pricing.base_price + item.pricing.tax;
+    const dataB = vendorB().map(item => ({
+        id: item.sku,
+        product_name: item.productName,
+        price_final: item.price,
 
-        let nama = item.details.name;
+        // true → "Tersedia", false → "Habis"
+        stock_status: item.isAvailable ? "Tersedia" : "Habis",
+
+        vendor: "B"
+    }));
+
+    const dataC = vendorC().map(item => {
+        let name = item.details.name;
+
+        // jika kategori Food → tambahkan (Recommended)
         if (item.details.category === "Food") {
-            nama += " (Recommended)";
+            name += " (Recommended)";
         }
 
         return {
-            vendor: "Vendor C",
-            kode_produk: item.id,
-            nama_produk: nama,
-            harga_final: harga_final,
-            stok: item.stock > 0 ? "Tersedia" : "Habis"
+            id: item.id,
+            product_name: name,
+            // harga = base_price + tax
+            price_final: item.pricing.base_price + item.pricing.tax,
+            stock_status: item.stock > 0 ? "Tersedia" : "Habis",
+            vendor: "C"
         };
     });
 
-    // GABUNGKAN SEMUA
-    return [...A, ...B, ...C];
+    // Terapkan aturan diskon vendor A
+    dataA.forEach(item => {
+        item.price_final = Math.floor(item.price_final * 0.9); // diskon 10%
+    });
+
+    // Gabungkan semua data
+    return [...dataA, ...dataB, ...dataC];
 }
 
-module.exports = normalizeAllVendors;
+module.exports = { normalize };
