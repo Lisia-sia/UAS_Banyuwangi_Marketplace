@@ -346,9 +346,6 @@ app.get("/api/integrated-products/db", async (req, res) => {
   }
 });
 
-// --------------------
-// START SERVER / export for Vercel
-// --------------------
 if (require.main === module) {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
