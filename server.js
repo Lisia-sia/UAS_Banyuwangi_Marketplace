@@ -259,9 +259,9 @@ app.get("/api/banyuwangi-marketplace/db", async (req, res) => {
 
     const bRows = bRes.rows.map(r => ({
       sku: r.sku,
-      productName: r.product_name,
+      productName: r.productName,
       price: r.price,
-      isAvailable: r.is_available
+      isAvailable: r.isAvailable
     }));
 
     const cRows = cRes.rows.map(r => ({
