@@ -1,19 +1,16 @@
-function normalizeFromDB(dataA, dataB, dataC) {
-  // Vendor A: Warung Klontong
+function normalize(dataA, dataB, dataC) {
   const normA = dataA.map(item => {
-    let harga = parseInt(item.hrg); // string → number
+    let harga = parseInt(item.hrg);
     harga = Math.floor(harga * 0.9); // diskon 10%
-    const stockStatus = item.ket_stok === "habis" ? "Habis" : "Tersedia";
     return {
       id: item.kd_produk,
       product_name: item.nm_brg,
       price_final: harga,
-      stock_status: stockStatus,
+      stock_status: item.ket_stok === "habis" ? "Habis" : "Tersedia",
       vendor: "A"
     };
   });
 
-  // Vendor B: Distro Fashion
   const normB = dataB.map(item => ({
     id: item.sku,
     product_name: item.product_name,
@@ -22,12 +19,9 @@ function normalizeFromDB(dataA, dataB, dataC) {
     vendor: "B"
   }));
 
-  // Vendor C: Resto Kuliner
   const normC = dataC.map(item => {
     let name = item.name;
-    if (item.category === "Food") {
-      name += " (Recommended)";
-    }
+    if (item.category === "Food") name += " (Recommended)";
     return {
       id: item.product_code.toString(),
       product_name: name,
@@ -40,4 +34,4 @@ function normalizeFromDB(dataA, dataB, dataC) {
   return [...normA, ...normB, ...normC];
 }
 
-module.exports = { normalizeFromDB };
+module.exports = { normalize };
