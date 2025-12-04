@@ -46,6 +46,16 @@ app.post("/login", async (req, res) => {
   }
 });
 
+
+app.get("/api/vendor-a/file", (req, res) => {
+  try {
+    const data = require("./vendor/mahasiswa1")();
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Gagal baca vendor file A" });
+  }
+});
+
 app.get("/api/vendor-a", async (req, res) => {
   try {
     const result = await db.query("SELECT * FROM vendor_a_products ORDER BY id ASC");
@@ -90,6 +100,15 @@ app.delete("/api/vendor-a/:id", async (req, res) => {
     res.json({ message: "Produk Vendor A dihapus" });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/vendor-b/file", (req, res) => {
+  try {
+    const data = require("./vendor/mahasiswa2")();
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Gagal baca vendor file B" });
   }
 });
 
@@ -148,6 +167,15 @@ app.delete("/api/vendor-b/:id", async (req, res) => {
   }
 });
 
+app.get("/api/vendor-c/file", (req, res) => {
+  try {
+    const data = require("./vendor/mahasiswa3")();
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Gagal baca vendor file C" });
+  }
+});
+
 app.get("/api/vendor-c", async (req, res) => {
   try {
     const result = await db.query("SELECT * FROM vendor_c_products ORDER BY id ASC");
@@ -198,33 +226,6 @@ app.delete("/api/vendor-c/:id", async (req, res) => {
     res.json({ message: "Produk Vendor C dihapus" });
   } catch (err) {
     res.status(500).json({ error: err.message });
-  }
-});
-
-app.get("/api/vendor-a/file", (req, res) => {
-  try {
-    const data = require("./vendor/mahasiswa1")();
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: "Gagal baca vendor file A" });
-  }
-});
-
-app.get("/api/vendor-b/file", (req, res) => {
-  try {
-    const data = require("./vendor/mahasiswa2")();
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: "Gagal baca vendor file B" });
-  }
-});
-
-app.get("/api/vendor-c/file", (req, res) => {
-  try {
-    const data = require("./vendor/mahasiswa3")();
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: "Gagal baca vendor file C" });
   }
 });
 
