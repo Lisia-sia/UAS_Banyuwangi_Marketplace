@@ -2,8 +2,7 @@ const db = require("../db.js");
 
 function normalize(dataA, dataB, dataC) {
   const normA = dataA.map(item => {
-    let harga = parseInt(item.hrg);
-    harga = Math.floor(harga * 0.9); // diskon 10%
+    let harga = Math.floor(parseInt(item.hrg) * 0.9);
 
     return {
       original_id: item.kd_produk,
@@ -34,9 +33,9 @@ function normalize(dataA, dataB, dataC) {
 }
 
 async function saveIntegrated(data) {
-  await db.query(`DELETE FROM integrated_products`);
+  await db.query("DELETE FROM integrated_products");
 
-  for (let item of data) {
+  for (const item of data) {
     await db.query(
       `INSERT INTO integrated_products 
       (original_id, product_name, price_final, stock_status, vendor)
