@@ -129,7 +129,7 @@ app.post("/api/vendor-b", async (req, res) => {
     const price = body.price;
     const isAvailable = (typeof body.isAvailable !== "undefined") ? body.isAvailable : body.is_available;
     const result = await db.query(
-      `INSERT INTO vendor_b_products (sku, productName, price, isAvailable)
+      `INSERT INTO vendor_b_products (sku, product_name, price, is_available)
        VALUES ($1,$2,$3,$4) RETURNING *`,
       [sku, productName, price, isAvailable]
     );
@@ -147,7 +147,7 @@ app.put("/api/vendor-b/:id", async (req, res) => {
     const price = body.price;
     const isAvailable = (typeof body.isAvailable !== "undefined") ? body.isAvailable : body.is_available;
     const result = await db.query(
-      `UPDATE vendor_b_products SET sku=$1, productName=$2, price=$3, isAvailable=$4 WHERE id=$5 RETURNING *`,
+      `UPDATE vendor_b_products SET sku=$1, product_name=$2, price=$3, is_available=$4 WHERE id=$5 RETURNING *`,
       [sku, productName, price, isAvailable, req.params.id]
     );
     if (result.rows.length === 0) return res.status(404).json({ error: "Produk tidak ditemukan" });
@@ -259,9 +259,9 @@ app.get("/api/banyuwangi-marketplace/db", async (req, res) => {
 
     const bRows = bRes.rows.map(r => ({
       sku: r.sku,
-      productName: r.productName,
+      productName: r.product_name,
       price: r.price,
-      isAvailable: r.isAvailable
+      isAvailable: r.is_available
     }));
 
     const cRows = cRes.rows.map(r => ({
