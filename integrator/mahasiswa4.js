@@ -1,6 +1,7 @@
 const db = require("../db.js");
 
 function normalize(dataA, dataB, dataC) {
+
   const normA = dataA.map(item => {
     const harga = Math.floor(Number(item.hrg) * 0.9);
 
@@ -9,24 +10,24 @@ function normalize(dataA, dataB, dataC) {
       product_name: item.nm_brg,
       price_final: harga,
       stock_status: item.ket_stok === "habis" ? "Habis" : "Tersedia",
-      vendor: "A",
+      vendor: "A"
     };
   });
 
   const normB = dataB.map(item => ({
     original_id: item.sku.toString(),
-    product_name: item.product_name,
+    product_name: item.productName,       // FIX: bukan product_name
     price_final: Number(item.price),
-    stock_status: item.is_available ? "Tersedia" : "Habis",
-    vendor: "B",
+    stock_status: item.isAvailable ? "Tersedia" : "Habis", // FIX: bukan is_available
+    vendor: "B"
   }));
 
   const normC = dataC.map(item => ({
-    original_id: item.product_code.toString(),
-    product_name: item.name,
-    price_final: Number(item.base_price) + Number(item.tax),
+    original_id: item.id.toString(),                     // FIX: bukan product_code
+    product_name: item.details.name,                     // FIX: nested
+    price_final: Number(item.pricing.base_price) + Number(item.pricing.tax), // FIX
     stock_status: item.stock > 0 ? "Tersedia" : "Habis",
-    vendor: "C",
+    vendor: "C"
   }));
 
   return [...normA, ...normB, ...normC];
@@ -34,10 +35,8 @@ function normalize(dataA, dataB, dataC) {
 
 async function saveIntegrated(data) {
   try {
-    // Bersihkan tabel dulu
     await db.query("DELETE FROM integrated_products");
 
-    // Insert semua data hasil normalize
     for (const item of data) {
       await db.query(
         `INSERT INTO integrated_products
@@ -48,7 +47,7 @@ async function saveIntegrated(data) {
           item.product_name,
           item.price_final,
           item.stock_status,
-          item.vendor,
+          item.vendor
         ]
       );
     }
@@ -59,5 +58,4 @@ async function saveIntegrated(data) {
     throw err;
   }
 }
-
 module.exports = { normalize, saveIntegrated };
