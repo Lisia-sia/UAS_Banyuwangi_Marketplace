@@ -308,6 +308,8 @@ app.get("/api/banyuwangi-marketplace/db", async (req, res) => {
     res.status(500).json({ error: "Gagal integrasi dari database" });
   }
 });
+
+// Save integrated (persist) — saves normalized from FILE into integrated_products table
 app.post("/api/banyuwangi-marketplace/save", async (req, res) => {
   try {
     const vendorA = require("./vendor/mahasiswa1")();
@@ -316,6 +318,7 @@ app.post("/api/banyuwangi-marketplace/save", async (req, res) => {
 
     const normalized = normalize(vendorA, vendorB, vendorC);
 
+    // clear table then insert
     await db.query("DELETE FROM integrated_products");
 
     for (const item of normalized) {
