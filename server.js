@@ -17,7 +17,7 @@ app.get("/", (req, res) => {
   res.send("Banyuwangi Marketplace API is running...");
 });
 
-app.post("/api/register", async (req, res) => {
+app.post("/register", async (req, res) => {
   try {
     const { username, password, role } = req.body;
     const hashed = await bcrypt.hash(password, 10);
@@ -31,7 +31,7 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
-app.post("/api/login", async (req, res) => {
+app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
     const found = await db.query("SELECT * FROM users WHERE username=$1", [username]);
