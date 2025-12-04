@@ -1,42 +1,43 @@
-const vendorA = require("../vendor/mahasiswa1");
-const vendorB = require("../vendor/mahasiswa2");
-const vendorC = require("../vendor/mahasiswa3");
+function normalizeFromDB(dataA, dataB, dataC) {
+  // Vendor A: Warung Klontong
+  const normA = dataA.map(item => {
+    let harga = parseInt(item.hrg); // string → number
+    harga = Math.floor(harga * 0.9); // diskon 10%
+    const stockStatus = item.ket_stok === "habis" ? "Habis" : "Tersedia";
+    return {
+      id: item.kd_produk,
+      product_name: item.nm_brg,
+      price_final: harga,
+      stock_status: stockStatus,
+      vendor: "A"
+    };
+  });
 
-function normalize() {
-    const dataA = vendorA().map(item => ({
-        id: item.kd_produk,
-        product_name: item.nm_brg,
-        price_final: parseInt(item.hrg),
-        stock_status: item.ket_stok,
-        vendor: "A"
-    }));
+  // Vendor B: Distro Fashion
+  const normB = dataB.map(item => ({
+    id: item.sku,
+    product_name: item.product_name,
+    price_final: item.price,
+    stock_status: item.is_available ? "Tersedia" : "Habis",
+    vendor: "B"
+  }));
 
-    const dataB = vendorB().map(item => ({
-        id: item.sku,
-        product_name: item.productName,
-        price_final: item.price,
-        stock_status: item.isAvailable ? "Tersedia" : "Habis",
-        vendor: "B"
-    }));
+  // Vendor C: Resto Kuliner
+  const normC = dataC.map(item => {
+    let name = item.name;
+    if (item.category === "Food") {
+      name += " (Recommended)";
+    }
+    return {
+      id: item.product_code.toString(),
+      product_name: name,
+      price_final: item.base_price + item.tax,
+      stock_status: item.stock > 0 ? "Tersedia" : "Habis",
+      vendor: "C"
+    };
+  });
 
-    const dataC = vendorC().map(item => {
-        let name = item.details.name;
-        if (item.details.category === "Food") {
-            name += " (Recommended)";
-        }
-        return {
-            id: item.id,
-            product_name: name,
-            price_final: item.pricing.base_price + item.pricing.tax,
-            stock_status: item.stock > 0 ? "Tersedia" : "Habis",
-            vendor: "C"
-        };
-    });
-
-    dataA.forEach(item => {
-        item.price_final = Math.floor(item.price_final * 0.9); // diskon 10%
-    });
-    return [...dataA, ...dataB, ...dataC];
+  return [...normA, ...normB, ...normC];
 }
 
-module.exports = { normalize };
+module.exports = { normalizeFromDB };
